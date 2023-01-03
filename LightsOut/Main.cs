@@ -85,7 +85,7 @@ namespace LightsOut
                         }
                         if (Config.CassieWaitForToggle == true) yield return Timing.WaitForSeconds(WaitTime);
                         Map.TurnOffAllLights(ActiveTime);
-                        Log.Debug($"Event active for {ActiveTime}");
+                        Log.Debug($"Event active for {ActiveTime} seconds");
                         yield return Timing.WaitForSeconds(ActiveTime);
                         break;
                 }
