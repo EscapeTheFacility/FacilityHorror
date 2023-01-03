@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.Events.EventArgs.Player;
 using Server = Exiled.Events.Handlers.Server;
+using Player = Exiled.Events.Handlers.Player;
 using MEC;
 
 namespace LightsOut
@@ -13,10 +15,12 @@ namespace LightsOut
 
         public override string Name { get; } = "LightsOut";
         public override string Author { get; } = "ThijsNameIsTaken";
-        public override Version Version { get; } = new Version(1, 0, 0);
+        public override Version Version { get; } = new Version(1, 0, 1);
         public override Version RequiredExiledVersion { get; } = new Version(6, 0, 0);
 
         private static readonly Main Singleton = new();
+        
+        public bool eventActive = false;
 
         private Main()
         {
@@ -30,6 +34,7 @@ namespace LightsOut
         {
             Server.RestartingRound += OnRestartingRound;
             Server.RoundStarted += OnStartingRound;
+            Player.TriggeringTesla += OnTriggeringTesla;
 
             base.OnEnabled();
         }
@@ -38,6 +43,7 @@ namespace LightsOut
         {
             Server.RestartingRound -= OnRestartingRound;
             Server.RoundStarted -= OnStartingRound;
+            Player.TriggeringTesla -= OnTriggeringTesla;
 
             base.OnDisabled();
         }
@@ -46,8 +52,7 @@ namespace LightsOut
 
         private void OnRestartingRound()
         {
-            if (_coroutine.IsRunning)
-                Timing.KillCoroutines(_coroutine);
+            if (_coroutine.IsRunning) Timing.KillCoroutines(_coroutine);
         }
 
         private void OnStartingRound()
@@ -57,17 +62,24 @@ namespace LightsOut
             if (activeTrigger == true) _coroutine = Timing.RunCoroutine(Lights());
         }
 
+        private void OnTriggeringTesla(TriggeringTeslaEventArgs ev)
+        {
+            if (eventActive == false) return;
+            if (Config.KeepTeslaEnabled == true) return;
+            ev.IsAllowed = false;
+        }
+
         private IEnumerator<float> Lights()
         {
             yield return Timing.WaitForSeconds(Config.MinStartOffset);
             while (true)
             {
-                int RandomInterval = UnityEngine.Random.Range(Config.MinRandomInterval, Config.MaxRandomInterval);
-                Log.Debug($"Next event: {RandomInterval} seconds");
-                yield return Timing.WaitForSeconds(RandomInterval);
+                int randomInterval = UnityEngine.Random.Range(Config.MinRandomInterval, Config.MaxRandomInterval);
+                Log.Debug($"Next event will start in {randomInterval} seconds");
+                yield return Timing.WaitForSeconds(randomInterval);
 
-                int ActiveTime = UnityEngine.Random.Range(Config.MinRandomBlackoutTime, Config.MaxRandomBlackoutTime);
-                float WaitTime = Cassie.CalculateDuration(Config.CassieMessage, true);
+                int activeTime = UnityEngine.Random.Range(Config.MinRandomBlackoutTime, Config.MaxRandomBlackoutTime);
+                float waitTime = Cassie.CalculateDuration(Config.CassieMessage, true);
 
                 switch (Warhead.IsInProgress)
                 {
@@ -83,10 +95,12 @@ namespace LightsOut
                         {
                             Cassie.Message(Config.CassieMessage, false, Config.CassieSoundAlarm, true);
                         }
-                        if (Config.CassieWaitForToggle == true) yield return Timing.WaitForSeconds(WaitTime);
-                        Map.TurnOffAllLights(ActiveTime);
-                        Log.Debug($"Event active for {ActiveTime} seconds");
-                        yield return Timing.WaitForSeconds(ActiveTime);
+                        if (Config.CassieWaitForToggle == true) yield return Timing.WaitForSeconds(waitTime);
+                        eventActive = true;
+                        Map.TurnOffAllLights(activeTime);
+                        Log.Debug($"Event active for {activeTime} seconds");
+                        yield return Timing.WaitForSeconds(activeTime);
+                        eventActive = false;
                         break;
                 }
             }
