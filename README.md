@@ -17,7 +17,6 @@ lights_out:
   # Chance percentage that the event will activate this round, between 1 and 100. Only round numbers are accepted.
   activation_chance: 50
   # Enable if you want to keep tesla gates working while in blackout. SCP-079 is always able to trigger a tesla, even during a blackout.
-  # Note: the tesla will still make the humming noise.
   keep_tesla_enabled: false
   # The CASSIE message to broadcast.
   cassie_message: generator .g3 malfunction detected .g4 .g3 .g3 .g4
