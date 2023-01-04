@@ -12,7 +12,7 @@ namespace LightsOut
         [Description("Chance percentage that the event will activate this round, between 1 and 100. Only round numbers are accepted.")]
         public int ActivationChance { get; private set; } = 50;
 
-        [Description("Enable if you want to keep tesla gates working while in blackout. SCP-079 is always able to trigger a tesla, even during a blackout.\nNote: the tesla will still make the humming noise.")]
+        [Description("Enable if you want to keep tesla gates working while in blackout. SCP-079 is always able to trigger a tesla, even during a blackout.")]
         public bool KeepTeslaEnabled { get; private set; } = false;
 
         [Description("The CASSIE message to broadcast.")]
