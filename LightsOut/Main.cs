@@ -96,7 +96,15 @@ namespace LightsOut
                         {
                             Cassie.Message(Config.CassieMessage, false, Config.CassieSoundAlarm, true);
                         }
-                        if (Config.CassieWaitForToggle == true) yield return Timing.WaitForSeconds(waitTime);
+
+                        if (Config.CassieWaitForToggle == true)
+                        {
+                            while (Cassie.IsSpeaking)
+                            {
+                                
+                            }
+                            yield return Timing.WaitForSeconds(waitTime);
+                        }
                         eventActive = true;
                         Map.TurnOffAllLights(activeTime);
                         Log.Debug($"Event active for {activeTime} seconds");
