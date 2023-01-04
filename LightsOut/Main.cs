@@ -66,6 +66,7 @@ namespace LightsOut
         {
             if (eventActive == false) return;
             if (Config.KeepTeslaEnabled == true) return;
+            ev.IsInIdleRange = false;
             ev.IsAllowed = false;
         }
 
