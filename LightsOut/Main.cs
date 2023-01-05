@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
+using Exiled.Events.EventArgs.Warhead;
 using Server = Exiled.Events.Handlers.Server;
 using Player = Exiled.Events.Handlers.Player;
+using Warhead = Exiled.Events.Handlers.Warhead;
 using MEC;
 
 namespace LightsOut
@@ -15,12 +17,14 @@ namespace LightsOut
 
         public override string Name { get; } = "LightsOut";
         public override string Author { get; } = "ThijsNameIsTaken";
-        public override Version Version { get; } = new Version(1, 0, 1);
+        public override Version Version { get; } = new Version(1, 0, 2);
         public override Version RequiredExiledVersion { get; } = new Version(6, 0, 0);
 
         private static readonly Main Singleton = new();
         
-        public bool eventActive = false;
+        private bool eventActive;
+        private bool warheadActive;
+        
 
         private Main()
         {
@@ -35,6 +39,8 @@ namespace LightsOut
             Server.RestartingRound += OnRestartingRound;
             Server.RoundStarted += OnStartingRound;
             Player.TriggeringTesla += OnTriggeringTesla;
+            Warhead.Starting += OnWarheadStarting;
+            Warhead.Stopping += OnWarheadStopping;
 
             base.OnEnabled();
         }
@@ -44,28 +50,43 @@ namespace LightsOut
             Server.RestartingRound -= OnRestartingRound;
             Server.RoundStarted -= OnStartingRound;
             Player.TriggeringTesla -= OnTriggeringTesla;
+            Warhead.Starting -= OnWarheadStarting;
+            Warhead.Stopping -= OnWarheadStopping;
 
             base.OnDisabled();
         }
 
-        private CoroutineHandle _coroutine;
+        private void OnWarheadStarting(StartingEventArgs ev)
+        {
+            warheadActive = true;
+        }
+
+        private void OnWarheadStopping(StoppingEventArgs ev)
+        {
+            warheadActive = false;
+        }
+
+        private CoroutineHandle LightsCoroutine;
 
         private void OnRestartingRound()
         {
-            if (_coroutine.IsRunning) Timing.KillCoroutines(_coroutine);
+            if (LightsCoroutine.IsRunning) Timing.KillCoroutines(LightsCoroutine);
         }
 
         private void OnStartingRound()
         {
             bool activeTrigger = UnityEngine.Random.Range(0, 100) < Config.ActivationChance;
             Log.Debug($"LightsOut event active this round: {activeTrigger}");
-            if (activeTrigger == true) _coroutine = Timing.RunCoroutine(Lights());
+            if (activeTrigger == true) LightsCoroutine = Timing.RunCoroutine(Lights());
         }
 
         private void OnTriggeringTesla(TriggeringTeslaEventArgs ev)
         {
-            if (eventActive == false) return;
-            if (Config.KeepTeslaEnabled == true) return;
+            if (Config.KeepTeslaEnabled || eventActive == false)
+            {
+                ev.IsAllowed = true;
+                return;
+            }
             ev.IsInIdleRange = false;
             ev.IsAllowed = false;
         }
@@ -82,7 +103,7 @@ namespace LightsOut
                 int activeTime = UnityEngine.Random.Range(Config.MinRandomBlackoutTime, Config.MaxRandomBlackoutTime);
                 float waitTime = Cassie.CalculateDuration(Config.CassieMessage, true);
 
-                switch (Warhead.IsInProgress)
+                switch (warheadActive)
                 {
                     case true:
                         Log.Debug($"Event skipped due to warhead sequence");
@@ -97,7 +118,7 @@ namespace LightsOut
                             Cassie.Message(Config.CassieMessage, false, Config.CassieSoundAlarm, true);
                         }
 
-                        if (Config.CassieWaitForToggle == true)
+                        if (Config.CassieWaitForToggle)
                         {
                             while (Cassie.IsSpeaking)
                             {
