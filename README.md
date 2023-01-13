@@ -1,13 +1,11 @@
-![GitHub all releases](https://img.shields.io/github/downloads/ThijsNameIsTaken/EXILED-LightsOut/total) ![Discord](https://img.shields.io/discord/656673194693885975?color=critical&label=EXILED)
+![GitHub all releases](https://img.shields.io/github/downloads/ThijsNameIsTaken/LightsOut/total)
 
-# EXILED-LightsOut
-The old LightsOut plugin, remade for EXILED 6.
+# LightsOut
+The old LightsOut plugin, remade for EXILED 6 & NWAPI
 
 # Features
 - The lights in the facility will go out on a random interval.
 - You can change the interval and CASSIE messages in the settings.
-
-(This is my first publicly released plugin so don't expect too much of it)
 
 # Default config:
 ```yaml
