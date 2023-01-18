@@ -7,6 +7,11 @@ The old LightsOut plugin, remade for EXILED 6 & NWAPI
 - The lights in the facility will go out on a random interval.
 - You can change the interval and CASSIE messages in the settings.
 
+### Note:
+Currently the following features are different between the EXILED and NWAPI versions:
+- `keep_tesla_enabled: false` is broken on the NWAPI version (will always be `true`)
+- `cassie_subitles` setting is removed on the NWAPI version. (The `cassie_message` string will be used instead, modifiers starting with a dot are filtered out of the displayed message)
+
 # Default config:
 ```yaml
 lights_out:
