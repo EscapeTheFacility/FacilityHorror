@@ -7,21 +7,21 @@ using PluginAPI.Core.Attributes;
 using PluginAPI.Core.Interfaces;
 using PluginAPI.Enums;
 
-namespace LightsOut
+namespace FacilityHorror
 {
     public class Main
     {
 
         [PluginConfig] public Config Config;
 
-        [PluginEntryPoint("LightsOut", "1.0.2", "Turn off the lights at random intervals.", "ThijsNameIsTaken")]
+        [PluginEntryPoint("FacilityHorror", "2.0.0", "Random scary facility events", "ThijsNameIsTaken")]
         void LoadPlugin()
         {
             Instance = this;
             PluginAPI.Events.EventManager.RegisterEvents(this);
         }
         
-        private bool eventActive;
+        internal bool eventActive;
         private bool warheadActive;
         
         public Main Instance { get; set; }
@@ -37,7 +37,7 @@ namespace LightsOut
             warheadActive = false;
         }
 
-        private CoroutineHandle LightsCoroutine;
+        internal CoroutineHandle LightsCoroutine;
 
         [PluginEvent(ServerEventType.RoundRestart)]
         private void OnRestartingRound()

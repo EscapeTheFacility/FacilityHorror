@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel;
 
-using Exiled.API.Interfaces;
-
-namespace LightsOut
+namespace FacilityHorror
 {
-    public sealed class Config : IConfig
+    public sealed class Config
     {
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
@@ -20,11 +18,10 @@ namespace LightsOut
         [Description("Enable if the ding-dong at the start of the CASSIE announcement should be played.")]
         public bool CassieSoundAlarm { get; private set; } = true;
         public bool CassieDisplaySubtitles { get; private set; } = true;
-        public string CassieSubtitles { get; private set; } = "Generator malfunction detected.";
         [Description("Enable if the lights should turn off after the full CASSIE announecment has played. If disabled, the lights will turn off while the announcement is playing.")]
         public bool CassieWaitForToggle { get; private set; } = true;
 
-        [Description("Time in seconds after round start that the blackout cannot occur. Note: the min_random_interval will be added to this.\nFor example: min_start_offset: 60 and min_random_interval: 40 means that from the round start at least 100 seconds will pass before the lights event can occur.\nAfter the first blackout the event cannot occur for only the time specified in min_random_interval.")]
+        [Description("Time in seconds after round start that the blackout cannot occur. Note: the min_random_interval will be added to this.\n# For example: min_start_offset: 60 and min_random_interval: 40 means that from the round start at least 100 seconds will pass before the lights event can occur.\n# After the first blackout the event cannot occur for only the time specified in min_random_interval.")]
         public int MinStartOffset { get; private set; } = 60;
         [Description("Randomized time interval in seconds between blackouts.")]
         public int MinRandomInterval { get; private set; } = 40;

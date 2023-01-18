@@ -3,10 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
 	  <LangVersion>9.0</LangVersion>
+	  <RootNamespace>LightsOut-EXILED</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EXILED" Version="6.0.0-beta.17" />
+    <PackageReference Include="EXILED" Version="6.0.0-beta.24" />
   </ItemGroup>
 
   <ItemGroup>

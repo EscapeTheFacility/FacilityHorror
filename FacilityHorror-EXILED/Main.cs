@@ -10,19 +10,19 @@ using Player = Exiled.Events.Handlers.Player;
 using Warhead = Exiled.Events.Handlers.Warhead;
 using MEC;
 
-namespace LightsOut
+namespace FacilityHorror
 {
     public class Main : Plugin<Config>
     {
 
-        public override string Name { get; } = "LightsOut";
+        public override string Name { get; } = "FacilityHorror";
         public override string Author { get; } = "ThijsNameIsTaken";
-        public override Version Version { get; } = new Version(1, 0, 2);
+        public override Version Version { get; } = new Version(2, 0, 0);
         public override Version RequiredExiledVersion { get; } = new Version(6, 0, 0);
 
         private static readonly Main Singleton = new();
         
-        private bool eventActive;
+        internal bool eventActive;
         private bool warheadActive;
         
 
@@ -66,18 +66,18 @@ namespace LightsOut
             warheadActive = false;
         }
 
-        private CoroutineHandle LightsCoroutine;
+        internal CoroutineHandle EventCoroutine;
 
         private void OnRestartingRound()
         {
-            if (LightsCoroutine.IsRunning) Timing.KillCoroutines(LightsCoroutine);
+            if (EventCoroutine.IsRunning) Timing.KillCoroutines(EventCoroutine);
         }
 
         private void OnStartingRound()
         {
             bool activeTrigger = UnityEngine.Random.Range(0, 100) < Config.ActivationChance;
-            Log.Debug($"LightsOut event active this round: {activeTrigger}");
-            if (activeTrigger == true) LightsCoroutine = Timing.RunCoroutine(Lights());
+            Log.Debug($"Event active this round: {activeTrigger}");
+            if (activeTrigger == true) EventCoroutine = Timing.RunCoroutine(Lights());
         }
 
         private void OnTriggeringTesla(TriggeringTeslaEventArgs ev)
