@@ -5,6 +5,7 @@ using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 using Exiled.Events.EventArgs.Warhead;
+using FacilityHorror.ConfigObjects;
 using Server = Exiled.Events.Handlers.Server;
 using Player = Exiled.Events.Handlers.Player;
 using Warhead = Exiled.Events.Handlers.Warhead;
@@ -20,22 +21,19 @@ namespace FacilityHorror
         public override Version Version { get; } = new Version(2, 0, 0);
         public override Version RequiredExiledVersion { get; } = new Version(6, 0, 0);
 
-        private static readonly Main Singleton = new();
-        
-        internal bool eventActive;
-        private bool warheadActive;
-        
+        private bool _eventActive;
+        private bool _warheadActive;
 
         private Main()
         {
         }
 
-        public static Main Instance => Singleton;
-
-        public override PluginPriority Priority { get; } = PluginPriority.Last;
+        public static Main Instance { get; set; }
 
         public override void OnEnabled()
         {
+            Instance = this;
+
             Server.RestartingRound += OnRestartingRound;
             Server.RoundStarted += OnStartingRound;
             Player.TriggeringTesla += OnTriggeringTesla;
@@ -47,6 +45,8 @@ namespace FacilityHorror
 
         public override void OnDisabled()
         {
+            if (_eventCoroutine.IsRunning) Timing.KillCoroutines(_eventCoroutine);
+
             Server.RestartingRound -= OnRestartingRound;
             Server.RoundStarted -= OnStartingRound;
             Player.TriggeringTesla -= OnTriggeringTesla;
@@ -58,79 +58,109 @@ namespace FacilityHorror
 
         private void OnWarheadStarting(StartingEventArgs ev)
         {
-            warheadActive = true;
+            _warheadActive = true;
         }
 
         private void OnWarheadStopping(StoppingEventArgs ev)
         {
-            warheadActive = false;
+            _warheadActive = false;
         }
 
-        internal CoroutineHandle EventCoroutine;
+        private CoroutineHandle _eventCoroutine;
+        private ConfigEventObject _currentEvent;
 
         private void OnRestartingRound()
         {
-            if (EventCoroutine.IsRunning) Timing.KillCoroutines(EventCoroutine);
+            if (_eventCoroutine.IsRunning) Timing.KillCoroutines(_eventCoroutine);
         }
 
         private void OnStartingRound()
         {
             bool activeTrigger = UnityEngine.Random.Range(0, 100) < Config.ActivationChance;
             Log.Debug($"Event active this round: {activeTrigger}");
-            if (activeTrigger == true) EventCoroutine = Timing.RunCoroutine(Lights());
+            if (activeTrigger) _eventCoroutine = Timing.RunCoroutine(EventTimer());
         }
 
         private void OnTriggeringTesla(TriggeringTeslaEventArgs ev)
         {
-            if (Config.KeepTeslaEnabled || eventActive == false)
+            if (_currentEvent.TeslaEnabled || _eventActive == false)
             {
-                ev.IsAllowed = true;
                 return;
             }
+
             ev.IsInIdleRange = false;
             ev.IsAllowed = false;
         }
 
-        private IEnumerator<float> Lights()
+        private IEnumerator<float> EventTimer()
         {
+            List<string> configList = new List<string>(Config.EventList.Keys);
             yield return Timing.WaitForSeconds(Config.MinStartOffset);
             while (true)
             {
+                string randomEvent = configList[UnityEngine.Random.Range(0, configList.Count)];
+                _currentEvent = Config.EventList[randomEvent];
                 int randomInterval = UnityEngine.Random.Range(Config.MinRandomInterval, Config.MaxRandomInterval);
                 Log.Debug($"Next event will start in {randomInterval} seconds");
                 yield return Timing.WaitForSeconds(randomInterval);
 
-                int activeTime = UnityEngine.Random.Range(Config.MinRandomBlackoutTime, Config.MaxRandomBlackoutTime);
-                float waitTime = Cassie.CalculateDuration(Config.CassieMessage, true);
+                int activeTime = UnityEngine.Random.Range(_currentEvent.MinRandomEventDuration,
+                    _currentEvent.MaxRandomEventDuration);
+                float waitTime = Cassie.CalculateDuration(_currentEvent.CassieText, true);
 
-                switch (warheadActive)
+                if (!_currentEvent.RunWhenWarhead && _warheadActive) continue;
+
+                switch (_warheadActive)
                 {
                     case true:
                         Log.Debug($"Event skipped due to warhead sequence");
                         break;
                     case false:
-                        if (Config.CassieDisplaySubtitles == true)
+                        if (_currentEvent.CassieTextEnabled)
                         {
-                            Cassie.MessageTranslated(Config.CassieMessage, Config.CassieSubtitles, false, Config.CassieSoundAlarm, true);
-                        }
-                        else
-                        {
-                            Cassie.Message(Config.CassieMessage, false, Config.CassieSoundAlarm, true);
+                            if (_currentEvent.CassieShowSubtitles)
+                            {
+                                Cassie.Message(_currentEvent.CassieText, isHeld: false,
+                                    isNoisy: _currentEvent.CassieRunJingle, isSubtitles: true);
+                            }
+                            else
+                            {
+                                Cassie.Message(_currentEvent.CassieText, isHeld: false,
+                                    isNoisy: _currentEvent.CassieRunJingle, isSubtitles: false);
+                            }
+
+                            if (_currentEvent.CassieWaitForMessage)
+                            {
+                                while (Cassie.IsSpeaking)
+                                {
+
+                                }
+                                yield return Timing.WaitForSeconds(waitTime);
+                            }
                         }
 
-                        if (Config.CassieWaitForToggle)
+                        _eventActive = true;
+                        if (_currentEvent.LightsOut) Map.TurnOffAllLights(activeTime);
+                        if (_currentEvent.DoorsLocked)
                         {
-                            while (Cassie.IsSpeaking)
+                            foreach (var door in Door.List)
                             {
-                                
+                                if (door.Type == DoorType.NukeSurface) continue;
+                                if (door.Type == DoorType.Scp079First || door.Type == DoorType.Scp079Second) continue;
+                                door.ChangeLock(DoorLockType.SpecialDoorFeature);
                             }
-                            yield return Timing.WaitForSeconds(waitTime);
                         }
-                        eventActive = true;
-                        Map.TurnOffAllLights(activeTime);
                         Log.Debug($"Event active for {activeTime} seconds");
                         yield return Timing.WaitForSeconds(activeTime);
-                        eventActive = false;
+                        if (_currentEvent.DoorsLocked)
+                        {
+                            foreach (var door in Door.List)
+                            {
+                                if(door.Type == DoorType.NukeSurface) continue;
+                                door.ChangeLock(DoorLockType.SpecialDoorFeature);
+                            }
+                        }
+                        _eventActive = false;
                         break;
                 }
             }

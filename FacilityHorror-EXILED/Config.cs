@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 using Exiled.API.Interfaces;
+using FacilityHorror.ConfigObjects;
 
 namespace FacilityHorror
 {
@@ -9,29 +11,66 @@ namespace FacilityHorror
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
 
-        [Description("Chance percentage that the event will activate this round, between 1 and 100. Only round numbers are accepted.")]
+        [Description("Chance percentage that the event system will activate this round, between 1 and 100")]
         public int ActivationChance { get; private set; } = 50;
 
-        [Description("Enable if you want to keep tesla gates working while in blackout. SCP-079 is always able to trigger a tesla, even during a blackout.")]
-        public bool KeepTeslaEnabled { get; private set; } = false;
-
-        [Description("The CASSIE message to broadcast.")]
-        public string CassieMessage { get; private set; } = "generator .g3 malfunction detected .g4 .g3 .g3 .g4";
-        [Description("Enable if the ding-dong at the start of the CASSIE announcement should be played.")]
-        public bool CassieSoundAlarm { get; private set; } = true;
-        public bool CassieDisplaySubtitles { get; private set; } = true;
-        public string CassieSubtitles { get; private set; } = "Generator malfunction detected.";
-        [Description("Enable if the lights should turn off after the full CASSIE announecment has played. If disabled, the lights will turn off while the announcement is playing.")]
-        public bool CassieWaitForToggle { get; private set; } = true;
-
-        [Description("Time in seconds after round start that the blackout cannot occur. Note: the min_random_interval will be added to this.\nFor example: min_start_offset: 60 and min_random_interval: 40 means that from the round start at least 100 seconds will pass before the lights event can occur.\nAfter the first blackout the event cannot occur for only the time specified in min_random_interval.")]
+        [Description("Time in seconds after round start that the event system is disabled. Note: the min_random_interval will be added to this.\nFor example: min_start_offset: 60 and min_random_interval: 40 means that from the round start at least 100 seconds will pass before first event can occur.\nAfter the first event cannot occur for only the time specified in min_random_interval.")]
         public int MinStartOffset { get; private set; } = 60;
-        [Description("Randomized time interval in seconds between blackouts.")]
+        [Description("Randomized time interval in seconds between events")]
         public int MinRandomInterval { get; private set; } = 40;
         public int MaxRandomInterval { get; private set; } = 400;
 
-        [Description("Randomized duration in seconds of each blackout.")]
-        public int MinRandomBlackoutTime { get; private set; } = 10;
-        public int MaxRandomBlackoutTime { get; private set; } = 100;
+        [Description("List of events")]
+        public Dictionary<string, ConfigEventObject> EventList { get; private set; } = new()
+        {
+            {
+                "NormalLightsOut", new()
+                {
+                    EventChance = 50,
+                    MinRandomEventDuration = 10,
+                    MaxRandomEventDuration = 100,
+                    RunWhenWarhead = false,
+                    CassieTextEnabled = true,
+                    CassieText = "Generator malfunction detected",
+                    CassieShowSubtitles = true,
+                    CassieRunJingle = true,
+                    TeslaEnabled = false,
+                    LightsOut = true,
+                    DoorsLocked = false
+                }
+            },
+            {
+                "DoorRestart", new()
+                {
+                    EventChance = 50,
+                    MinRandomEventDuration = 10,
+                    MaxRandomEventDuration = 100,
+                    RunWhenWarhead = false,
+                    CassieTextEnabled = true,
+                    CassieText = "Door system malfunction detected",
+                    CassieShowSubtitles = true,
+                    CassieRunJingle = true,
+                    TeslaEnabled = true,
+                    LightsOut = false,
+                    DoorsLocked = true
+                }
+            },
+            {
+                "CassieBleep", new()
+                {
+                    EventChance = 50,
+                    MinRandomEventDuration = 10,
+                    MaxRandomEventDuration = 15,
+                    RunWhenWarhead = true,
+                    CassieTextEnabled = true,
+                    CassieText = "pitch_0.15 .g7",
+                    CassieShowSubtitles = false,
+                    CassieRunJingle = false,
+                    TeslaEnabled = true,
+                    LightsOut = false,
+                    DoorsLocked = false,
+                }
+            }
+        };
     }
 }
