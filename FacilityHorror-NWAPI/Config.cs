@@ -24,7 +24,6 @@ namespace FacilityHorror
             {
                 "NormalLightsOut", new()
                 {
-                    EventChance = 50,
                     MinRandomEventDuration = 10,
                     MaxRandomEventDuration = 100,
                     RunWhenWarhead = false,
@@ -40,7 +39,6 @@ namespace FacilityHorror
             {
                 "DoorRestart", new()
                 {
-                    EventChance = 50,
                     MinRandomEventDuration = 10,
                     MaxRandomEventDuration = 100,
                     RunWhenWarhead = false,
@@ -56,7 +54,6 @@ namespace FacilityHorror
             {
                 "CassieBleep", new()
                 {
-                    EventChance = 50,
                     MinRandomEventDuration = 10,
                     MaxRandomEventDuration = 15,
                     RunWhenWarhead = true,

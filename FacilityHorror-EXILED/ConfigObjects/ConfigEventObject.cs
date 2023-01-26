@@ -4,8 +4,6 @@ namespace FacilityHorror.ConfigObjects
 {
     public class ConfigEventObject
     {
-        [Description("The chance of this event occuring in percentage")]
-        public int EventChance { get; set; } = 50;
         [Description("Randomized duration in seconds of this event. Not used when lights_out is false and tesla_enabled is true")]
         public int MinRandomEventDuration { get; set; } = 10;
         public int MaxRandomEventDuration { get; set; } = 100;

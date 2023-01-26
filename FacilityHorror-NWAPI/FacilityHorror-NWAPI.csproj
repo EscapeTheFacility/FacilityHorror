@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
 	  <LangVersion>9.0</LangVersion>
-	  <RootNamespace>LightsOut-NWAPI</RootNamespace>
+	  <RootNamespace>FacilityHorror-NWAPI</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
