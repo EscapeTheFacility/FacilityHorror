@@ -24,10 +24,6 @@ namespace FacilityHorror
         private bool _eventActive;
         private bool _warheadActive;
 
-        private Main()
-        {
-        }
-
         public static Main Instance { get; set; }
 
         public override void OnEnabled()
