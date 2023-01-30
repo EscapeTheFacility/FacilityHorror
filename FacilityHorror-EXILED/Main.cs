@@ -75,11 +75,15 @@ namespace FacilityHorror
             bool activeTrigger = UnityEngine.Random.Range(0, 100) < Config.ActivationChance;
             Log.Debug($"Event active this round: {activeTrigger}");
             if (activeTrigger) _eventCoroutine = Timing.RunCoroutine(EventTimer());
+            _currentEvent = new()
+            {
+                TeslaEnabled = true,
+            };
         }
 
         private void OnTriggeringTesla(TriggeringTeslaEventArgs ev)
         {
-            if (_currentEvent.TeslaEnabled || _eventActive == false)
+            if ((_eventActive && _currentEvent.TeslaEnabled) || !_eventActive)
             {
                 return;
             }
