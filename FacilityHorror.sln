@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightsOut-EXILED", "LightsOut-EXILED\LightsOut-EXILED.csproj", "{F1B366F1-FAFE-4767-9E1C-D489C2607EC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacilityHorror-EXILED", "FacilityHorror-EXILED\FacilityHorror-EXILED.csproj", "{F1B366F1-FAFE-4767-9E1C-D489C2607EC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LightsOut-NWAPI", "LightsOut-NWAPI\LightsOut-NWAPI.csproj", "{F1B366F1-FAFE-4767-9E1C-D489C2607EC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacilityHorror-NWAPI", "FacilityHorror-NWAPI\FacilityHorror-NWAPI.csproj", "{F1B366F1-FAFE-4767-9E1C-D489C2607EC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

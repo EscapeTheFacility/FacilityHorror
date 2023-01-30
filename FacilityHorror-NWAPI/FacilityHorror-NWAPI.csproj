@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
 	  <LangVersion>9.0</LangVersion>
+	  <RootNamespace>FacilityHorror-NWAPI</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,8 +22,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\_Dependencies\Base\12.0.2\Assembly-CSharp-Publicized.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>C:\Games\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirror">
+      <HintPath>..\..\_Dependencies\EXILED-ServerDeps\12.0.2-Exiled.beta-25\Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\_Dependencies\EXILED-ServerDeps\12.0.2-Exiled.beta-25\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\_Dependencies\EXILED-ServerDeps\12.0.2-Exiled.beta-25\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>C:\Games\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
@@ -30,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Northwood.PluginAPI" Version="12.0.0-rc.6" />
+    <PackageReference Include="Northwood.PluginAPI" Version="12.0.0" />
   </ItemGroup>
 
 </Project>
