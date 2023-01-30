@@ -26,7 +26,7 @@ namespace FacilityHorror.ConfigObjects
         [Description("Should the lights go out during the event")]
         public bool LightsOut { get; set; } = true;
         [Description("Should the doors lock during the event")]
-        public bool DoorsLocked = false;
+        public bool DoorsLocked { get; set; } = false;
 
     }
 }
