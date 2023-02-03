@@ -12,7 +12,7 @@ namespace FacilityHorror
         [Description("Chance percentage that the event system will activate this round, between 1 and 100")]
         public int ActivationChance { get; private set; } = 50;
 
-        [Description("Time in seconds after round start that the event system is disabled. Note: the min_random_interval will be added to this.\nFor example: min_start_offset: 60 and min_random_interval: 40 means that from the round start at least 100 seconds will pass before first event can occur.\nAfter the first event cannot occur for only the time specified in min_random_interval.")]
+        [Description("Time in seconds after round start that the event system is disabled. Note: the min_random_interval will be added to this.\n# For example: min_start_offset: 60 and min_random_interval: 40 means that from the round start at least 100 seconds will pass before first event can occur.\n# After the first event cannot occur for only the time specified in min_random_interval.")]
         public int MinStartOffset { get; private set; } = 60;
         [Description("Randomized time interval in seconds between events")]
         public int MinRandomInterval { get; private set; } = 40;
