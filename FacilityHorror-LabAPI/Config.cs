@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
-using FacilityHorror.ConfigObjects;
+using FacilityHorror_LabAPI.ConfigObjects;
 
-namespace FacilityHorror
+namespace FacilityHorror_LabAPI
 {
-    public sealed class Config
+    public class Config
     {
-        public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
 
         [Description("Chance percentage that the event system will activate this round, between 1 and 100")]

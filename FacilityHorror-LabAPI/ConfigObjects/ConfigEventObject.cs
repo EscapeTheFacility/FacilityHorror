@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
-namespace FacilityHorror.ConfigObjects
+namespace FacilityHorror_LabAPI.ConfigObjects
 {
     public class ConfigEventObject
     {
